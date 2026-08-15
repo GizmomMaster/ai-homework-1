@@ -11,8 +11,15 @@ const { printReport } = require('./report');
 
 const CONCURRENCY = 10;
 
+function parseArgs(argv) {
+  const flags = new Set(argv.filter((a) => a.startsWith('-')));
+  const onlyBroken = flags.has('--broken') || flags.has('-b');
+  const targetArg = argv.find((a) => !a.startsWith('-'));
+  return { onlyBroken, targetArg };
+}
+
 async function main() {
-  const targetArg = process.argv[2];
+  const { onlyBroken, targetArg } = parseArgs(process.argv.slice(2));
   const rootDir = path.resolve(targetArg || path.join(__dirname, '..', 'ecto-1-kb-main'));
 
   if (!fs.existsSync(rootDir) || !fs.statSync(rootDir).isDirectory()) {
@@ -47,7 +54,7 @@ async function main() {
     return { ...item, status: 'SKIP', code: 'не проверяется' };
   });
 
-  printReport(results, rootDir);
+  printReport(results, rootDir, { onlyBroken });
 
   const hasBroken = results.some((r) => r.status === 'BROKEN');
   process.exit(hasBroken ? 1 : 0);

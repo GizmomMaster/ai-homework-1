@@ -44,16 +44,22 @@ function statusCell(status, code) {
   return colorize(label, 'gray');
 }
 
-function printReport(results, rootDir) {
-  const rows = results.map((r, i) => [
-    String(i + 1),
-    path.relative(rootDir, r.file),
-    r.target,
-    r.type,
-    statusCell(r.status, r.code),
-  ]);
+function printReport(results, rootDir, { onlyBroken = false } = {}) {
+  const toShow = onlyBroken ? results.filter((r) => r.status === 'BROKEN') : results;
 
-  printTable(rows, ['№', 'Файл', 'Ссылка', 'Тип', 'Статус']);
+  if (toShow.length === 0) {
+    console.log(colorize('Сломанных ссылок не найдено.', 'green'));
+  } else {
+    const rows = toShow.map((r, i) => [
+      String(i + 1),
+      path.relative(rootDir, r.file),
+      r.target,
+      r.type,
+      statusCell(r.status, r.code),
+    ]);
+
+    printTable(rows, ['№', 'Файл', 'Ссылка', 'Тип', 'Статус']);
+  }
 
   const total = results.length;
   const broken = results.filter((r) => r.status === 'BROKEN').length;
