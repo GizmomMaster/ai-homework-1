@@ -1,0 +1,13 @@
+{
+  "name": "ai-homework-1",
+  "version": "1.0.0",
+  "description": "Консольная утилита для сканирования .md файлов и проверки ссылок в них",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "ISC"
+}
